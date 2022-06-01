@@ -1,6 +1,5 @@
 import { Text, View, TextInput, Button, StyleSheet } from "react-native";
 import React, { Component, useState } from "react";
-import { TouchableOpacity } from "react-native-web";
 
 const Login = ({ navigator }) => {
   return (
@@ -11,19 +10,16 @@ const Login = ({ navigator }) => {
         placeholder="Ingresa tu correo"
       />
       <TextInput
-        password='true'
         style={styles.textInputStyle}
         placeholder="Ingresa tu contraseña"
       />
               
-      <Button title="Registrarse" onPress={()=> navigator.navigate('Login')}></Button>
-      <Button title="Iniciar sesión" onPress={()=> navigator.navigate('Login')}></Button>
+      <Button title="Registrarse" onPress={()=>{}}></Button>
+      <Button title="Iniciar sesión" onPress={()=> {}}></Button>
 
       <View>
         <Text>Ya tienes una cuenta?? </Text>
-        <TouchableOpacity onPress={() => navigation.replace("Login")}>
-          <Text style={{ color: "blue" }}>Login</Text>
-        </TouchableOpacity>
+
       </View>    
     
     </View>

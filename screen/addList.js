@@ -7,7 +7,11 @@ const addList = () => {
  
     const saveList = async() => {
         if (state.name!='') {
-            await  firebase.db.collection('Usuario').doc('ID_usuario').collection('Salidas').doc('Consumo').collection('Items').add({
+            await  firebase.db.collection('Usuario')
+            .doc('ID_usuario')
+            .collection('Salidas')
+            .doc('Consumo')
+            .collection('Items').add({
                 name: state.name,
                 valor: state.valor,
                 cantidad: state.cantidad

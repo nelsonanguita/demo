@@ -1,22 +1,102 @@
-import {
-  Text,
-  View,
-  Dimensions,
-  TextInput,
-  Button,
-  TouchableOpacity,
-  StyleSheet,
-  StatusBar,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
-
-
 import React, { Component, useState } from "react";
+import {Text,View,  Dimensions,TextInput,  Button,  TouchableOpacity,  StyleSheet,  StatusBar,} from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import Svg, { Path, Defs, LinearGradient, Stop } from "react-native-svg";
+
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+//import { initializeApp } from "firebase/app";
+import {auth}  from "../database/firebase";
+
+//import { getAuth, initializeAuth, onAuthStateChanged } from "firebase/auth";
+import { async } from "@firebase/util";
+//import firebase  from "../database/firebase";
+
 const { width, height } = Dimensions.get("window");
 
 const Login = () => {
+
   const navigation = useNavigation();
+
+  const [loginEmail, setEmail ] = React.useState('')
+  const [loginPassword, setPassword ] = React.useState('')
+  
+  const login = async () =>{
+    try {
+      
+      const user = await signInWithEmailAndPassword(
+        auth, 
+        loginEmail,
+        loginPassword)
+      .then(()=>{
+        console.log("Account logged")
+        const user = auth.currentUser;
+        console.log(user)
+        navigation.navigate('Home')
+      })
+      
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
+  
+  function LoginScreen() {
+
+    const app = initializeAuth()
+
+    const auth = getAuth(firebase);
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        console.log(user)
+        navigation.navigate('Home')
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // ..
+    });
+
+    return(
+      <View style={styles.mainContainer}>
+      <StatusBar style="auto" />
+      <View style={styles.containerSVG}>
+        <SvgTop />
+      </View>
+     
+      <View style={styles.container}>
+  
+        <Text style={styles.Title}>Hello</Text>
+        <Text style={styles.subTitle}>Sign in to your account</Text>
+
+        <TextInput
+          style={styles.textInputStyle}
+          placeholder="Ingresa tu correo"
+          onChangeText={(text)=>setEmail(text)}
+
+        />
+        <TextInput
+          style={styles.textInputStyle}
+          placeholder="Ingresa tu contraseñas"
+          secureTextEntry={true}
+          onChangeText={(text)=>setPassword(text)}
+        />
+
+        
+        <View style={styles.boton}>
+          <Button  title="Iniciar sesion" onPress={login}></Button>
+        </View>
+        <View style={styles.boton}>
+          <Button style={{marginTop: 20, width:40}} title="Registrarse" onPress={() => navigation.navigate('Registarse')}></Button>
+        </View>
+        <Text>Ya tienes una cuenta?? </Text>
+      </View>
+    </View>
+    )
+  }
+
+
   function SvgTop() {
     return (
       <Svg
@@ -63,36 +143,41 @@ const Login = () => {
   }
   return (
     <View style={styles.mainContainer}>
-      <StatusBar style="auto" />
-      <View style={styles.containerSVG}>
-        <SvgTop />
-      </View>
-     
-      <View style={styles.container}>
-  
-        <Text style={styles.Title}>Hello</Text>
-        <Text style={styles.subTitle}>Sign in to your account</Text>
-
-        <TextInput
-          style={styles.textInputStyle}
-          placeholder="Ingresa tu correo"
-        />
-        <TextInput
-          password="true"
-          style={styles.textInputStyle}
-          placeholder="Ingresa tu contraseña"
-        />
-
-        
-        <View style={styles.boton}>
-          <Button  title="Iniciar sesion" onPress={() => {}}></Button>
-        </View>
-        <View style={styles.boton}>
-          <Button style={{marginTop: 20, width:40}} title="Registrarse" onPress={() => navigation.navigate('Home')}></Button>
-        </View>
-        <Text>Ya tienes una cuenta?? </Text>
-      </View>
+    <StatusBar style="auto" />
+    <View style={styles.containerSVG}>
+      <SvgTop />
     </View>
+   
+    <View style={styles.container}>
+
+      <Text style={styles.Title}>Hello</Text>
+      <Text style={styles.subTitle}>Sign in to your account</Text>
+
+      <TextInput
+        style={styles.textInputStyle}
+        placeholder="Ingresa tu correo"
+        onChangeText={(text)=>setEmail(text)}
+
+      />
+      <TextInput
+        style={styles.textInputStyle}
+        placeholder="Ingresa tu contraseñas"
+        secureTextEntry={true}
+        onChangeText={(text)=>setPassword(text)}
+      />
+
+      
+      <View style={styles.boton}>
+        <Button  title="Iniciar sesion" onPress={login}></Button>
+      </View>
+      <View style={styles.boton}>
+        <Button style={{marginTop: 20, width:40}} title="Registrarse" onPress={ () => navigation.navigate('Registro')}></Button>
+      </View>
+      <Text>Si no tienes cuenta registrate! </Text>
+    </View>
+  </View>
+    
+     // <LoginScreen/>
   );
 };
 

@@ -1,10 +1,12 @@
 import React from "react";
-
-import Login from "./screen/Login"
+import { NavigationContainer } from "@react-navigation/native";
+import { BottomTab } from "./navigation/BottomTab";
 
 const App = () => {
   return(
-    <Login/>
+    <NavigationContainer>
+      <BottomTab/>
+    </NavigationContainer>
     
   );
 } 

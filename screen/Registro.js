@@ -1,5 +1,5 @@
 import React, { Component, useState } from "react";
-import {Text,View,  Dimensions,TextInput,  Button,  TouchableOpacity,  StyleSheet,  StatusBar,} from "react-native";
+import {Alert, Text,View,  Dimensions,TextInput,  Button,  TouchableOpacity,  StyleSheet,  StatusBar,} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Svg, { Path, Defs, LinearGradient, Stop } from "react-native-svg";
 
@@ -25,14 +25,17 @@ const Registro = () => {
       
       const user = await createUserWithEmailAndPassword(auth, email, password)
       .then(()=>{
-        console.log("Account created")
+        //console.log("Account created")
         const user = auth.currentUser;
-        console.log(user)
         navigation.navigate('Home')
       })
       
     } catch (error) {
-      console.log(error.message)
+      //console.log(error.message)
+      if (password.length<6) {
+        Alert.alert("La constraseña debe ser mayor a 5 digitos")  
+      }
+      
     }
   }
   

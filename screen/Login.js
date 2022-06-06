@@ -1,5 +1,5 @@
 import React, { Component, useState } from "react";
-import {Text,View,  Dimensions,TextInput,  Button,  TouchableOpacity,  StyleSheet,  StatusBar,} from "react-native";
+import {Alert, Text,View,  Dimensions,TextInput,  Button,  TouchableOpacity,  StyleSheet,  StatusBar,} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Svg, { Path, Defs, LinearGradient, Stop } from "react-native-svg";
 
@@ -9,6 +9,7 @@ import {auth}  from "../database/firebase";
 
 //import { getAuth, initializeAuth, onAuthStateChanged } from "firebase/auth";
 import { async } from "@firebase/util";
+
 //import firebase  from "../database/firebase";
 
 const { width, height } = Dimensions.get("window");
@@ -28,14 +29,18 @@ const Login = () => {
         loginEmail,
         loginPassword)
       .then(()=>{
-        console.log("Account logged")
+       // console.log("Account logged")
         const user = auth.currentUser;
-        console.log(user)
+       // console.log(user)
         navigation.navigate('Home')
+
       })
       
     } catch (error) {
-      console.log(error.message)
+      Alert.alert("Usuario y/o contraseña invalidos")
+      console.log(error.code)
+      //const errorCode = error.code;
+      //const errorMessage = error.message;
     }
   }
   

@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { FaHome, FaUserEdit, FaList } from 'react-icons/fa';
 import Profile from '../screen/Profile';
 import Home from "../screen/Home";
-//import Listas from "../screen/Listas";
+import Listas from "../screen/Listas";
 //import Addlist from "../screen/addList";
 //import listarrer from "../screen/listarrer";
 import Login from "../screen/Login";
@@ -37,14 +37,17 @@ export const BottomTab = () =>{
                 
                 {auth.currentUser?.email ?(
                     <Tab.Group>
-                        <Tab.Screen name="Home" component = {Home} options={{
-                                        headerShown: false, //borrar encabezado
-                                        tabBarIcon:({focused})=>(
-                                        <View style={{
-                                            alignItems: 'center',justifyContent:'center',top:0
-                                        }}>
+                        <Tab.Screen
+                            name="Home"
+                            component = {Listas}//{Home}
+                            options={{
+                                headerShown: false, //borrar encabezado
+                                tabBarIcon:({focused})=>(
+                                    <View style={{
+                                        alignItems: 'center',justifyContent:'center',top:0
+                                    }}>
 
-                                            <Text>{auth.currentUser?.email}</Text>
+                                    <Text>{auth.currentUser?.email}</Text>
                                         </View>  
                                         )
                                         

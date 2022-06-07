@@ -1,12 +1,12 @@
 import React, { Component, useState } from "react";
 import {StyleSheet, Text, View} from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { FaHome, FaUserEdit, FaList } from 'react-icons/fa';
 import Profile from '../screen/Profile';
 import Home from "../screen/Home";
 import Listas from "../screen/Listas";
 //import Addlist from "../screen/addList";
 //import listarrer from "../screen/listarrer";
+import Historial from "../screen/Historial";
 import Login from "../screen/Login";
 import Registro from "../screen/Registro";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -20,7 +20,7 @@ export const BottomTab = () =>{
             setUser(currentUser);
         })
     return(
-            <Tab.Navigator initialRouteName="Login"
+                     <Tab.Navigator  initialRouteName="Login"
             screenOptions={{
                 tabBarShowLabel:false,
                 tabBarStyle:{
@@ -30,7 +30,8 @@ export const BottomTab = () =>{
                     elevation: 0,
                     backgroundColor:'#ffffff',
                     borderRadius:15,
-                    height: 50,
+                    height: 60,
+                    width:380
 
                 }
             }} >
@@ -39,20 +40,66 @@ export const BottomTab = () =>{
                     <Tab.Group>
                         <Tab.Screen
                             name="Home"
-                            component = {Listas}//{Home}
+                            component = {Home}
                             options={{
                                 headerShown: false, //borrar encabezado
                                 tabBarIcon:({focused})=>(
                                     <View style={{
-                                        alignItems: 'center',justifyContent:'center',top:0
+                                        //alignItems: 'center',justifyContent:'center',top:0
                                     }}>
 
-                                    <Text>{auth.currentUser?.email}</Text>
+                                    <Text>Home</Text>
                                         </View>  
                                         )
                                         
                                     }}/> 
+                         <Tab.Screen
+                            name="Lista"
+                            component = {Listas}
+                            options={{
+                                headerShown: false, //borrar encabezado
+                                tabBarIcon:({focused})=>(
+                                    <View style={{
+                                       // alignItems: 'center',justifyContent:'center',top:0
+                                    }}>
+
+                                    <Text>Listas</Text>
+                                        </View>  
+                                        )
+                                        
+                                    }}/>  
+                                     <Tab.Screen
+                            name="Historial"
+                            component = {Historial}
+                            options={{
+                                headerShown: false, //borrar encabezado
+                                tabBarIcon:({focused})=>(
+                                    <View style={{
+                                      //  alignItems: 'center',justifyContent:'center',top:0
+                                    }}>
+
+                                    <Text>Historial</Text>
+                                        </View>  
+                                        )
+                                        
+                                    }}/>   
+                                     <Tab.Screen
+                            name="Perfil"
+                            component = {Profile}
+                            options={{
+                                headerShown: false, //borrar encabezado
+                                tabBarIcon:({focused})=>(
+                                    <View style={{
+                                       // alignItems: 'center',justifyContent:'center',top:0
+                                    }}>
+
+                                    <Text>Perfil</Text>
+                                        </View>  
+                                        )
+                                        
+                                    }}/>          
                     </Tab.Group>
+                    
                 ):(
                 <Tab.Group>
                     <Tab.Screen 
@@ -96,6 +143,7 @@ export const BottomTab = () =>{
                        
                 
             </Tab.Navigator>
+   
     );
 }
 const styles = StyleSheet.create({

@@ -80,16 +80,30 @@ const App = () => {
             <View style={styles.modalView}>
               <Text style={styles.modalText}>Eliminar o Editar</Text>
               
-              <TextInput style={styles.modalText}>Cerveza</TextInput>
-              <TextInput style={styles.modalText}>$2800</TextInput>
-              <TextInput style={styles.modalText}>2</TextInput>
+              <TextInput style={styles.modalTextInput}>Cerveza</TextInput>
+              <TextInput style={styles.modalTextInput}>$2800</TextInput>
+              <TextInput style={styles.modalTextInput}>2</TextInput>
+
+                <View style={styles.botones}>
+                  
+              <Pressable
+                style={[styles.button, styles.buttonCloseEliminar]}
+                onPress={() => setModalVisible(!modalVisible)}
+              >
+              <Text style={styles.textStyleEliminar}>ELIMINAR</Text>
+              </Pressable>
+
+
 
               <Pressable
                 style={[styles.button, styles.buttonClose]}
                 onPress={() => setModalVisible(!modalVisible)}
               >
-                <Text style={styles.textStyle}>ACEPTAR</Text>
+                <Text style={styles.textStyleGuardar}>GUARDAR</Text>
               </Pressable>
+                </View>
+
+
             </View>
           </View>
         </Modal>
@@ -105,6 +119,8 @@ const App = () => {
               <Text style={styles.textStyle}>Editar</Text>
           </Pressable>
         </View>
+
+
         
 </View>
     ;
@@ -118,7 +134,12 @@ const App = () => {
           keyExtractor={item => item.id} />
           
         </View>
-      
+        <Pressable
+                style={[styles.buttonAgregar, styles.buttonOpen]}
+                onPress={() => setModalVisible(true)}
+                >
+              <Text style={styles.textStyle}>+</Text>
+          </Pressable>
     </SafeAreaView>
   );
 };
@@ -131,13 +152,13 @@ const styles = StyleSheet.create({
 
   },
   item: {
-      
     backgroundColor: '#ffffff',
     padding: 10,
     marginVertical: 10,
     marginHorizontal: 10,
     flex: 1,
     flexDirection: "row",
+    borderRadius:20
   },
   producto: {
     fontSize: 20,
@@ -190,20 +211,54 @@ const styles = StyleSheet.create({
     elevation: 2
   },
   buttonOpen: {
-    backgroundColor: "#F194FF",
+    backgroundColor: "#6A9CFD",
   },
   buttonClose: {
     backgroundColor: "#2196F3",
+  },
+  buttonCloseEliminar: {
+    backgroundColor: "#D0312D",
   },
   textStyle: {
     color: "white",
     fontWeight: "bold",
     textAlign: "center"
   },
+  textStyleEliminar: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  textStyleGuardar: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  modalTextInput:{
+    marginBottom: 15,
+    textAlign: "center",
+    borderWidth:2,
+    borderColor:"#AEE4FF",
+    borderRadius:3,
+    width:100,
+
+
+  },
   modalText: {
     marginBottom: 15,
-    textAlign: "center"
-  }
+    textAlign: "center",
+    borderColor: "#ccc",
+  },
+  botones:{
+    flexDirection: "row",
+    
+  },
+  buttonAgregar:{
+    padding:15,
+    width:50,
+    alignSelf:'flex-end',
+    borderRadius:50
+    }
  
 });
 

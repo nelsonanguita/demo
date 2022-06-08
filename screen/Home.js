@@ -50,14 +50,12 @@ const handleAddItem = async (e) => {
     e.preventDefault()
     try {
       const doc = await addDoc(collection(db, 'Usuario',auth.currentUser.uid,'Salidas',), {
-        //cantidad: "se repite?",
-        //name: "aaa",
-        //valor: "2",
-        //created: Timestamp.now()
+        
       })
       
       setDoc(doc.id)
-      console.log(setDoc)
+      navigation.navigate('Lista')
+      console.log("paso por aqui")
     } catch (err) {
       alert(err)
     }

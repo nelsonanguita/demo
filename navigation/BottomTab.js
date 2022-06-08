@@ -3,7 +3,7 @@ import {StyleSheet, Text, View} from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Profile from '../screen/Profile';
 import Home from "../screen/Home";
-import Listas from "../screen/Listas";
+import Lista from "../screen/Lista";
 //import Addlist from "../screen/addList";
 //import listarrer from "../screen/listarrer";
 import Historial from "../screen/Historial";
@@ -55,7 +55,7 @@ export const BottomTab = () =>{
                                     }}/> 
                          <Tab.Screen
                             name="Lista"
-                            component = {Listas}
+                            component = {Lista}
                             options={{
                                 headerShown: false, //borrar encabezado
                                 tabBarIcon:({focused})=>(

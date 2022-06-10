@@ -1,12 +1,10 @@
 import React, {useState} from "react";
 import { View, TextInput, Text, Button, Modal, StyleSheet, Pressable } from "react-native";
-import {db, auth } from "../database/firebase";
 import {collection, addDoc, Timestamp} from 'firebase/firestore'
-
-
-const Lista = ({navigation}) =>{
-
-
+import {db, auth } from "../database/firebase";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert } from "react-native-web";
+const Lista = ({props}) =>{
 
 const [state, setState] = useState({
     cantidad:'',
@@ -14,33 +12,42 @@ const [state, setState] = useState({
     valor:'',
     
 })
-const [doc, setDoc] = React.useState(auth.email)
-const [modalVisible, setModalVisible] = useState(false);
+
+let list = []
+const [doc, setDoc] = React.useState('')
+const [modalVisible, setModalVisible] = useState(true);
 
 const handleChangetext=(name, value)=>{
     setState({...state, [name]: value})
 }
 
+
+
 const handleAddItem = async (e) => {
     e.preventDefault()
     try {
+
+      if (list.length==0) {
+        handleCreatedList()
+       }
       await addDoc(collection(db, 'Usuario',auth.currentUser.uid,'Salidas',doc,'Items'), {
         
         cantidad: state.cantidad,
         name: state.name,
         valor: state.valor,
-        
               
         //created: Timestamp.now()
       })
       
-    } catch (err) {
-        console.log(state.cantidad)
-        console.log(state.name)
-        console.log(state.precio)
-      alert(err)
+    } catch (error) {
+      console.log(auth.currentUser.uid+" ERRORRRRRRRRRRRR")
+      console.log(error.message)
+       // alert(err)
     }
   }
+
+  
+
 
   const handleCreatedList = async (e) => {
     e.preventDefault()
@@ -50,45 +57,41 @@ const handleAddItem = async (e) => {
       })
       
       setDoc(doc.id)
-      console.log(setDoc)
+      console.log(doc.id)
+
+     getData()
     } catch (err) {
       alert(err)
   
     }
   }
 
+
+  const getData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('@IdLista:lista')
+      if(value !== null) {
+       console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        console.log(value)
+      }
+    } catch(e) {
+      // error reading value
+      console.log(e)
+
+    }
+  }
+
 return(
- <View>
+ <View style={styles.container}>
      
      <View style={{flex:1, backgroundColor:'#AEE4FF'}}>
             <Text>LISTADO</Text>
-            <TextInput
-            placeholder="ingrese item"
-            onChangeText={ (value) => handleChangetext('cantidad',value)}
-            />
-                        <TextInput
-            placeholder="ingrese precio"
-            onChangeText={ (value) => handleChangetext('name',value)}
-            />
-                        <TextInput
-            placeholder="ingrese cant"
-            onChangeText={ (value) => handleChangetext('valor',value)}
-            />
-
-
-            <View>
-                    <Button onPress={handleAddItem} title="Agregar datos"/>
-            </View>
-
-            <View>
-                    <Button onPress={handleCreatedList} title="Crear nueva lista"/>
-            </View>
-
-            
+                        
         </View>
 
         <View>
                 <Modal
+                style={styles.modal}
         animationType="slide"
         transparent={true}
         visible={modalVisible}
@@ -97,24 +100,74 @@ return(
           setModalVisible(!modalVisible);
         }}
       >
+        
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Hello World!</Text>
+            <View style={styles.casillas}>
+            <Text style={{flex:0.5}}>Cantidad</Text>
+          <TextInput style={styles.inputText}
+            placeholder="ingrese item"
+            onChangeText={ (value) => handleChangetext('cantidad',value)}
+            />
+            </View>
+            <View style={styles.casillas}>
+            <Text  style={{flex:0.5}}>Producto</Text>
+                        <TextInput style={styles.inputText}
+            placeholder="ingrese precio"
+            onChangeText={ (value) => handleChangetext('name',value)}
+            />
+            </View>
+            <View style={styles.casillas}>
+            <Text  style={{flex:0.5}}>Valor</Text>
+                        <TextInput style={styles.inputText}
+            placeholder="ingrese cant"
+            onChangeText={ (value) => handleChangetext('valor',value)}
+            />
+
+            </View>
+            
+            
+            
+
+            <View>
+                    <Button onPress={handleAddItem} title="Agregar datos"/>
+            </View>
+
+            <View>
+                    <Button onPress={getData} title="Crear nueva lista"/>
+            </View>
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => setModalVisible(!modalVisible)}
             >
-              <Text style={styles.textStyle}>Hide Modal</Text>
+              <Text style={styles.textStyle}>Guardar</Text>
             </Pressable>
           </View>
         </View>
+
+
+
       </Modal>
+      <View style={styles.botones}>
       <Pressable
-        style={[styles.button, styles.buttonOpen]}
-        onPress={() => setModalVisible(true)}
-      >
-        <Text style={styles.textStyle}>Show Modal</Text>
-      </Pressable>
+          style={[styles.button, styles.buttonOpen,styles.boton]}
+          onPress={() => setModalVisible(true)}
+        >
+          <Text style={styles.textStyle}>CREAR LISTA</Text>
+        </Pressable>
+        
+        <Pressable
+          style={[styles.button, styles.buttonOpen,styles.boton]}
+          onPress={() => setModalVisible(true)}
+        >
+          <Text style={styles.textStyle}>AGREGAR ITEM</Text>
+        </Pressable>
+
+      </View>
+      
+      <View>
+        
+      </View>
     </View>
       
 
@@ -125,6 +178,10 @@ return(
 
 
 const styles = StyleSheet.create({
+  container:{
+    backgroundColor: "#50B2C0",
+    flex: 1,
+    },
     centeredView: {
       flex: 1,
       justifyContent: "center",
@@ -132,30 +189,46 @@ const styles = StyleSheet.create({
       marginTop: 22
     },
     modalView: {
-      margin: 20,
+      height:300,
+      margin: 60,
       backgroundColor: "white",
       borderRadius: 20,
       padding: 35,
       alignItems: "center",
       shadowColor: "#000",
       shadowOffset: {
-        width: 0,
-        height: 2
+        width: 2,
+        height: 12
       },
+  
       shadowOpacity: 0.25,
       shadowRadius: 4,
       elevation: 5
     },
+    inputText:{
+      borderColor:'#AEE4FF',
+      borderWidth:1,
+      width:10,
+      height:30,
+      margin:15,
+      borderRadius:20,
+      textAlign:'center',
+      flex:0.5
+
+    },
     button: {
       borderRadius: 20,
       padding: 10,
-      elevation: 2
+      elevation: 2,
+      
     },
     buttonOpen: {
       backgroundColor: "#F194FF",
+
     },
     buttonClose: {
       backgroundColor: "#2196F3",
+            
     },
     textStyle: {
       color: "white",
@@ -165,6 +238,15 @@ const styles = StyleSheet.create({
     modalText: {
       marginBottom: 15,
       textAlign: "center"
+    },
+    casillas:{
+      flexDirection: "row",
+      alignItems:'center',
+      
+      
+    },
+    botones:{
+      marginBottom:30
     }
   });
 export default Lista;

@@ -6,16 +6,16 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 
 import { View, Text, Button,StyleSheet } from "react-native";
 import {db, auth } from "../database/firebase";
-import {collection, addDoc, Timestamp} from 'firebase/firestore'
+import {collection, addDoc, doc, Timestamp} from 'firebase/firestore'
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Home = () =>{
 
 const [user, setUser] = React.useState()
 const [email, setEmail] = React.useState(auth.email)
 
-const [doc, setDoc] = React.useState(auth.email)
-
-
+const [doc, setDoc] = React.useState('')
 
 const navigation = useNavigation();
 
@@ -46,16 +46,15 @@ const handleAddItem = async (e) => {
   }
 
   //creo lista
-  const handleCreatedList = async (e) => {
+const handleCreatedList = async (e) => {
     e.preventDefault()
     try {
       const doc = await addDoc(collection(db, 'Usuario',auth.currentUser.uid,'Salidas',), {
         
       })
-      
-      setDoc(doc.id)
-      navigation.navigate('Lista')
-      console.log("paso por aqui")
+      obtenerIdLista(doc.id)
+     // navigation.navigate('Lista')
+
     } catch (err) {
       alert(err)
     }
@@ -65,7 +64,19 @@ const handleAddItem = async (e) => {
   //para prueba
   const datos = () =>{
 
-        console.log(auth.currentUser.uid)
+    obtenerIdLista(doc)
+
+        //navigation.navigate('Lista')
+
+  }
+
+  const obtenerIdLista = async(doc) =>{
+    try {
+     await AsyncStorage.setItem('@IdLista:lista',doc.toString())
+    } catch (error) {
+      console.log(error)
+
+    }
   }
 
     return(
@@ -80,20 +91,22 @@ const handleAddItem = async (e) => {
                 <View>
                     <Text>
                         HOLA chau ! ? +
+                        {auth.currentUser.uid}
+
                     </Text>
                 </View>
         
 
                 <View>
             
-            <Button onPress={handleAddItem} title="Agregar datos"/>
+            <Button onPress={(handleCreatedList)} title="Agregar datos"/>
             </View>
             <Text>
                 crear
             </Text>
             <View>
             
-            <Button onPress={handleCreatedList} title="Crear lista"/>
+            <Button onPress={(datos) => navigation.navigate('Lista')} title="Crear lista"/>
             </View>
             
             <Text>

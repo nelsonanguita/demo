@@ -1,5 +1,5 @@
 import React, { Component, useState } from "react";
-import {StyleSheet, Text, View} from 'react-native'
+import {StyleSheet, Text, View, Dimensions} from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Profile from '../screen/Profile';
 import Home from "../screen/Home";
@@ -10,6 +10,8 @@ import Historial from "../screen/Historial";
 import Login from "../screen/Login";
 import Registro from "../screen/Registro";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+const { width, height } = Dimensions.get("window");
 
 const Tab = createBottomTabNavigator();
 
@@ -24,16 +26,14 @@ export const BottomTab = () =>{
             screenOptions={{
                 tabBarShowLabel:false,
                 tabBarStyle:{
-                    bottom:25,
-                    left:20,
-                    right: 20,
-                    elevation: 0,
-                    backgroundColor:'#ffffff',
-                    borderRadius:15,
-                    height: 60,
-                    width:380
-
-                }
+                    bottom:0,
+                    backgroundColor:'#FF4000',
+                    borderRadius:0,
+                    height: 70,
+                    width: width,
+                   
+                    
+                                    }
             }} >
                 
                 {auth.currentUser?.email ?(
@@ -58,6 +58,7 @@ export const BottomTab = () =>{
                             component = {Lista}
                             options={{
                                 headerShown: false, //borrar encabezado
+                                footerShown: false,
                                 tabBarIcon:({focused})=>(
                                     <View style={{
                                        // alignItems: 'center',justifyContent:'center',top:0

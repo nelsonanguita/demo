@@ -1,10 +1,36 @@
-import React, {useState} from "react";
-import { View, TextInput, Text, Button, Modal, StyleSheet, Pressable } from "react-native";
-import {collection, addDoc, Timestamp} from 'firebase/firestore'
+import React, {useEffect ,useState} from "react";
+import { View,FlatList, TextInput, Text, Button, Modal, StyleSheet, Pressable } from "react-native";
+import {collection, addDoc, getDocs } from 'firebase/firestore'
 import {db, auth } from "../database/firebase";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Alert } from "react-native-web";
-const Lista = ({props}) =>{
+import { async } from "@firebase/util";
+
+
+
+const Lista = ({route}) =>{
+  
+  const [idLista, setidLista] = React.useState('')
+  const [prueba, setPrueba] = React.useState([])
+
+  useEffect( () =>{   
+
+    if (idLista==='') {
+      console.log(idLista + " entro arriba! ")
+      const { idLista } = route?.params || '';  
+      setidLista(idLista)
+    }
+          
+        if (idLista!= null) {
+          console.log(idLista + " entro! ")
+          check()  
+        }
+        
+           
+
+    
+  },[])
+
+
 
 const [state, setState] = useState({
     cantidad:'',
@@ -13,24 +39,33 @@ const [state, setState] = useState({
     
 })
 
+
+
 let list = []
-const [doc, setDoc] = React.useState('')
-const [modalVisible, setModalVisible] = useState(true);
+const [modalVisible, setModalVisible] = useState(false);
 
 const handleChangetext=(name, value)=>{
     setState({...state, [name]: value})
 }
+async function check(){
 
-
+  try {
+    const querySnapshot =  await getDocs(collection(db, "Usuario",auth.currentUser.uid,'Salidas',idLista,'Items'));
+    console.log("entro")
+    const prueba = []
+    querySnapshot.forEach((doc) => {
+            //console.log(doc.id, " => ", doc.data());
+     prueba.push(doc.data())
+  });  
+  setPrueba(prueba)
+  } catch (error) {
+    console.log(error)
+  }}
 
 const handleAddItem = async (e) => {
     e.preventDefault()
     try {
-
-      if (list.length==0) {
-        handleCreatedList()
-       }
-      await addDoc(collection(db, 'Usuario',auth.currentUser.uid,'Salidas',doc,'Items'), {
+     await addDoc(collection(db, 'Usuario',auth.currentUser.uid,'Salidas',idLista,'Items'), {
         
         cantidad: state.cantidad,
         name: state.name,
@@ -40,9 +75,8 @@ const handleAddItem = async (e) => {
       })
       
     } catch (error) {
-      console.log(auth.currentUser.uid+" ERRORRRRRRRRRRRR")
+      console.log(idLista+ " ERRORRRRRRRRRRRR")
       console.log(error.message)
-       // alert(err)
     }
   }
 
@@ -50,18 +84,18 @@ const handleAddItem = async (e) => {
 
 
   const handleCreatedList = async (e) => {
+    console.log("creo lista")
     e.preventDefault()
     try {
       const doc = await addDoc(collection(db, 'Usuario',auth.currentUser.uid,'Salidas',), {
       
       })
       
-      setDoc(doc.id)
-      console.log(doc.id)
+      setidLista(doc.id)
 
-     getData()
     } catch (err) {
-      alert(err)
+      alert(err.message)
+      console.log(doc.id)
   
     }
   }
@@ -84,13 +118,13 @@ const handleAddItem = async (e) => {
 return(
  <View style={styles.container}>
      
-     <View style={{flex:1, backgroundColor:'#AEE4FF'}}>
+     <View >
             <Text>LISTADO</Text>
                         
         </View>
 
         <View>
-                <Modal
+        <Modal
                 style={styles.modal}
         animationType="slide"
         transparent={true}
@@ -134,7 +168,7 @@ return(
             </View>
 
             <View>
-                    <Button onPress={getData} title="Crear nueva lista"/>
+                    <Button onPress={handleCreatedList} title="Crear nueva lista"/>
             </View>
             <Pressable
               style={[styles.button, styles.buttonClose]}
@@ -148,12 +182,22 @@ return(
 
 
       </Modal>
+
+        
+      <FlatList style={{backgroundColor:'blue'}}
+        data={prueba}
+        renderItem={({item}) => 
+        <Text>{item.cantidad + item.name + item.valor}</Text>}
+        
+      
+      />    
+
       <View style={styles.botones}>
       <Pressable
           style={[styles.button, styles.buttonOpen,styles.boton]}
-          onPress={() => setModalVisible(true)}
+          onPress={(handleCreatedList) => setModalVisible(true)}
         >
-          <Text style={styles.textStyle}>CREAR LISTA</Text>
+          <Text style={styles.textStyle}>CREAR LISTA boton</Text>
         </Pressable>
         
         <Pressable
@@ -179,7 +223,7 @@ return(
 
 const styles = StyleSheet.create({
   container:{
-    backgroundColor: "#50B2C0",
+    backgroundColor: "#AEE4FF",
     flex: 1,
     },
     centeredView: {

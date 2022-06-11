@@ -1,7 +1,6 @@
 import React, { Component, useState } from "react";
 import { async } from "@firebase/util";
 import { useNavigation } from "@react-navigation/native";
-
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
 import { View, Text, Button,StyleSheet } from "react-native";
@@ -13,9 +12,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const Home = () =>{
 
 const [user, setUser] = React.useState()
-const [email, setEmail] = React.useState(auth.email)
-
 const [doc, setDoc] = React.useState('')
+const [idLista, setidLista] = React.useState('')
 
 const navigation = useNavigation();
 
@@ -52,8 +50,9 @@ const handleCreatedList = async (e) => {
       const doc = await addDoc(collection(db, 'Usuario',auth.currentUser.uid,'Salidas',), {
         
       })
-      obtenerIdLista(doc.id)
-     // navigation.navigate('Lista')
+      //obtenerIdLista(doc.id)
+      setidLista(doc.id)
+      navigation.navigate('Lista',{idLista :doc.id })
 
     } catch (err) {
       alert(err)
@@ -81,38 +80,27 @@ const handleCreatedList = async (e) => {
 
     return(
         <View style={styles.container}>
+           
+           
             <Text>
-                "Coreo de la sesión :: "
+                "Coreo de la sesión : "
                 {user?.email}
             </Text>
-            <Text>
-                Listado
-            </Text>
+           
+               
                 <View>
                     <Text>
-                        HOLA chau ! ? +
-                        {auth.currentUser.uid}
-
+                        HOLA  {auth.currentUser.email}
                     </Text>
                 </View>
         
 
-                <View>
-            
-            <Button onPress={(handleCreatedList)} title="Agregar datos"/>
-            </View>
-            <Text>
-                crear
-            </Text>
-            <View>
-            
-            <Button onPress={(datos) => navigation.navigate('Lista')} title="Crear lista"/>
+
+                        <View>
+              <Button style={styles.button} onPress={(handleCreatedList)} title="Crear nueva salida! "/>
             </View>
             
-            <Text>
-                Salir
-            </Text>
-            <Button onPress={logout} title="Salir de la sesion"/>
+           
             
         </View>
     )
@@ -122,6 +110,9 @@ const styles = StyleSheet.create({
     container:{
         backgroundColor: "#AEE4FF",
         flex: 1,
+    },
+    button:{
+
     }
 })
 

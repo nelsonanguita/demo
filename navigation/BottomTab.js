@@ -17,6 +17,8 @@ const Tab = createBottomTabNavigator();
 
 export const BottomTab = () =>{
     const [user, setUser] = React.useState()
+    const [idLista, setidLista] = React.useState('xxx')
+    
     const auth = getAuth();
                onAuthStateChanged(auth, (currentUser) =>{
             setUser(currentUser);
@@ -31,6 +33,7 @@ export const BottomTab = () =>{
                     borderRadius:0,
                     height: 70,
                     width: width,
+                    
                    
                     
                                     }
@@ -41,6 +44,7 @@ export const BottomTab = () =>{
                         <Tab.Screen
                             name="Home"
                             component = {Home}
+                            initialParams = {{idLista:{idLista}}}
                             options={{
                                 headerShown: false, //borrar encabezado
                                 tabBarIcon:({focused})=>(
@@ -54,17 +58,17 @@ export const BottomTab = () =>{
                                         
                                     }}/> 
                          <Tab.Screen
-                            name="Lista"
+                            name=" "
                             component = {Lista}
                             options={{
-                                headerShown: false, //borrar encabezado
+                                //headerShown: false, //borrar encabezado
                                 footerShown: false,
                                 tabBarIcon:({focused})=>(
                                     <View style={{
                                        // alignItems: 'center',justifyContent:'center',top:0
                                     }}>
 
-                                    <Text>Listas</Text>
+                                    <Text>Salidas</Text>
                                         </View>  
                                         )
                                         

@@ -27,16 +27,15 @@ export const BottomTab = () =>{
                      <Tab.Navigator  initialRouteName="Login"
             screenOptions={{
                 tabBarShowLabel:false,
+                tabBarHideOnKeyboard: true,
                 tabBarStyle:{
                     bottom:0,
                     backgroundColor:'#FF4000',
                     borderRadius:0,
                     height: 70,
                     width: width,
-                    
-                   
-                    
-                                    }
+                           
+                }
             }} >
                 
                 {auth.currentUser?.email ?(
@@ -58,7 +57,7 @@ export const BottomTab = () =>{
                                         
                                     }}/> 
                          <Tab.Screen
-                            name=" "
+                            name="Lista"
                             component = {Lista}
                             options={{
                                 //headerShown: false, //borrar encabezado

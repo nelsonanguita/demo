@@ -1,37 +1,86 @@
 import React, {useEffect ,useState} from "react";
-import { View,FlatList, TextInput, Text, Button, Modal, StyleSheet, Pressable } from "react-native";
-import {collection, addDoc, getDocs } from 'firebase/firestore'
+import { View,FlatList,TouchableHighlight, TextInput, Text, Modal, StyleSheet, Pressable, Alert } from "react-native";
+import {collection, addDoc, getDocs,getDoc,updateDoc, deleteDoc, doc } from 'firebase/firestore'
 import {db, auth } from "../database/firebase";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+//import AsyncStorage from '@react-native-async-storage/async-storage';
 import { async } from "@firebase/util";
+import { BottomTabBar } from "@react-navigation/bottom-tabs";
 
 
 
-const Lista = ({route}) =>{
+const Lista = () =>{
+
+  const [listadoItem, setListadoItem] = React.useState([]);
+  const [idLista, setidLista] = React.useState(''); 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisibleEditar, setModalVisibleEditar] = useState(false);
   
-  const [idLista, setidLista] = React.useState('')
-  const [prueba, setPrueba] = React.useState([])
-
-  useEffect( () =>{   
-
-    if (idLista==='') {
-      console.log(idLista + " entro arriba! ")
-      const { idLista } = route?.params || '';  
-      setidLista(idLista)
+  const [idItem, setIdItem ]= useState('');
+ 
+if (true) {
+  useEffect(() =>{        
+    
+    async function Lista() {
+      console.log("Dentro de la funcion")
+  
+      const querySnapshot = await getDocs(collection(db, "Usuario",auth.currentUser.uid,'Salidas',idLista,'Items'));
+      const listadoItem = []
+      querySnapshot.forEach((doc) => {
+        // console.log(doc.id, " => ", doc.data());
+        const{ cantidad, name, valor} = doc.data()
+            listadoItem.push({
+              id:doc.id,
+              cantidad,
+              name,
+              valor,
+            })
+    
+           // console.log(listadoItem)
+  
+      })      
+     // console.log(listadoItem+"desde el effect")
+     setListadoItem(listadoItem)  
+     //return null;
     }
-          
-        if (idLista!= null) {
-          console.log(idLista + " entro! ")
-          check()  
-        }
-        
-           
-
+    //const  querySnapshot =  await getDocs(collection(db, "Usuario",auth.currentUser.uid,'Salidas',idLista,'Items'));
+    
+    if (idLista!=='') {
+      console.log("Se recorrio la lista desde la BD")
+      Lista()
+    }
+    
     
   },[])
+}
 
+  
 
+  async function buscarElementos() {
+    console.log("Dentro de la funcion")
 
+    const querySnapshot = await getDocs(collection(db, "Usuario",auth.currentUser.uid,'Salidas',idLista,'Items'));
+    const listadoItem = []
+    querySnapshot.forEach((doc) => {
+      // console.log(doc.id, " => ", doc.data());
+      const{ cantidad, name, valor} = doc.data()
+          listadoItem.push({
+            id:doc.id,
+            cantidad,
+            name,
+            valor,
+          })
+  
+         // console.log(listadoItem)
+
+    })      
+   // console.log(listadoItem+"desde el effect")
+    console.log("Se recorrio la lista desde la BD")
+    setListadoItem(listadoItem)
+
+   //return () => null;
+  }
+
+//UPDATE ITEMS
 const [state, setState] = useState({
     cantidad:'',
     name:'',
@@ -40,60 +89,171 @@ const [state, setState] = useState({
 })
 
 
+//EDITAR ELEMENTOS
+const handleEditItem = async (idItem) => {
+console.log("actualiza?"+ idItem)
+ try {
+  const docRef = doc(db,('Usuario/'+auth.currentUser.uid+'/Salidas/'+idLista+'/Items/'),idItem)
+  //  const docRef = doc(db,'Usuarios',auth.currentUser.uid,'Salidas',idLista,'Items',idItem)
+    
+    await updateDoc(docRef ,{
+      cantidad: state.cantidad,
+      name: state.name,
+      valor: state.valor,
+    })
+    setState({...state, 
+      'name': '',
+      'valor': '',
+      'cantidad': '',
+      'id': ''
+    })
+    setModalVisibleEditar(false);
+    buscarElementos()
+ } catch (error) {
+  console.log(error.message)
+ }
 
-let list = []
-const [modalVisible, setModalVisible] = useState(false);
+}
 
+
+
+//ELIMINAR ELEMENTO
+const handleDeleteItem = async (idItem) => {
+  try {
+    //const docRef = doc(db,'Items',idItem)
+    //const querySnapshot = await getDocs(collection(db, "Usuario",auth.currentUser.uid,'Salidas',idLista,'Items'))
+  //const docRef = getDoc(collection(db,`Usuario/${auth.currentUser.uid}/Salidas/${idLista}/Items/`))
+   const docRef = doc(db,('Usuario/'+auth.currentUser.uid+'/Salidas/'+idLista+'/Items/'),idItem)
+   // const docRef = doc(db,'Task','smINzqlywGB8Mxk1L1JS')
+   //const docRef = doc(db,'Salidas','eDNzwyjKkYHgP7k3hRmp')
+    //const docRef = doc(db,`Usuarios "/" ${auth.currentUser.uid} "/" Salidas`,'eDNzwyjKkYHgP7k3hRmp')
+   // deleteDoc(docRef) 
+    //const querySnapshot = 
+    // querySnapshot.forEach((doc) => {      
+    //   // console.log(listadoItem)
+    //      deleteDoc(docRef)  
+    // })  
+
+   
+    // if (idItem==val.id) {
+    //   val.delete() 
+    // }
+  deleteDoc(docRef).then({
+
+    
+    //buscarElementos
+    //console.log("Eliminado   " + idItem)
+  },
+ // buscarElementos()
+   
+  )
+  buscarElementos()
+
+  setState({...state, 
+    'name': '',
+    'valor': '',
+    'cantidad': '',
+    'id': ''
+  })
+  setModalVisibleEditar(false);
+
+   //deleteDoc(doc(db,'Usuarios'/auth.currentUser.uid/'Salidas'/idLista/'Items',idItem));
+
+  //console.log(docRef)
+    
+    //console.log(idItem)
+    //console.log(idLista)
+
+  } catch (error) {
+    console.log(error.message)
+    console.log("error.message")
+
+  }
+   
+}
+
+
+const handleDeleteItem2= async (itemId ) => {// (userId, listId, itemId ) => {
+  //collection(db, "Usuario",auth.currentUser.uid,'Salidas',idLista,'Items')
+ // const subColRef = collection(db, "Ususrios", userId, "Salidas",listId);
+ //const subColRef = collection(db, "users", userId, "books");
+ // const subColRef = collection(db, "Usuarios", auth.currentUser.uid, "Salidas",idLista,"Items");
+  const subColRef = collection(db, `"Usuario"/${auth.currentUser.uid}/"Salidas"/${idLista}/"Items"`);
+  
+  await deleteDoc(doc(subColRef, itemId));
+  console.log("Eliminado el item "+itemId)
+}
+
+
+//OPTENGO DATOS DESDE LO INPUT
 const handleChangetext=(name, value)=>{
     setState({...state, [name]: value})
 }
-async function check(){
 
-  try {
-    const querySnapshot =  await getDocs(collection(db, "Usuario",auth.currentUser.uid,'Salidas',idLista,'Items'));
-    console.log("entro")
-    const prueba = []
-    querySnapshot.forEach((doc) => {
-            //console.log(doc.id, " => ", doc.data());
-     prueba.push(doc.data())
-  });  
-  setPrueba(prueba)
-  } catch (error) {
-    console.log(error)
-  }}
 
+//MODAL
+
+const showModalEditar = (idItem) =>{
+
+  let item = listadoItem.find(item => item.id === idItem)
+ 
+  setState({...state, 
+    'name': item.name,
+    'valor': item.valor,
+    'cantidad': item.cantidad,
+    'id': item.id
+  })
+
+    setModalVisibleEditar(true);
+
+}
+
+//AGREGAR ITEM 
 const handleAddItem = async (e) => {
-    e.preventDefault()
+   // e.preventDefault()
     try {
+     console.log("agrego item")
      await addDoc(collection(db, 'Usuario',auth.currentUser.uid,'Salidas',idLista,'Items'), {
-        
+                
         cantidad: state.cantidad,
         name: state.name,
         valor: state.valor,
               
         //created: Timestamp.now()
       })
-      
+      buscarElementos()
+      setModalVisible(false)
+      console.log("agrego item exitoso")
+        state.cantidad =''
+        state.name=''
+        state.valor=''
     } catch (error) {
+      if (idLista=='') {
+        Alert.alert("Debe crear una lista para agregar elemetos")
+      }
       console.log(idLista+ " ERRORRRRRRRRRRRR")
       console.log(error.message)
     }
   }
 
-  
-
-
-  const handleCreatedList = async (e) => {
-    console.log("creo lista")
-    e.preventDefault()
+//CREAR LISTA
+  const handleCreatedList = async () => {
+     console.log("creo lista")
+     
+    //e.preventDefault()
     try {
+      if (idLista!=='') {
+        console.log('ya hay una lista en uso\nDesea crear otra?')
+        return null
+      }
       const doc = await addDoc(collection(db, 'Usuario',auth.currentUser.uid,'Salidas',), {
-      
-      })
-      
+       })
+     
+      console.log(doc.id)
       setidLista(doc.id)
-
+      setModalVisible(true)
     } catch (err) {
+      console.log("erro lista"+err.message)
       alert(err.message)
       console.log(doc.id)
   
@@ -101,119 +261,220 @@ const handleAddItem = async (e) => {
   }
 
 
-  const getData = async () => {
-    try {
-      const value = await AsyncStorage.getItem('@IdLista:lista')
-      if(value !== null) {
-       console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-        console.log(value)
-      }
-    } catch(e) {
-      // error reading value
-      console.log(e)
-
-    }
-  }
-
 return(
  <View style={styles.container}>
-     
-     <View >
-            <Text>LISTADO</Text>
-                        
-        </View>
 
-        <View>
-        <Modal
-                style={styles.modal}
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-          setModalVisible(!modalVisible);
-        }}
-      >
-        
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <View style={styles.casillas}>
-            <Text style={{flex:0.5}}>Cantidad</Text>
-          <TextInput style={styles.inputText}
-            placeholder="ingrese item"
-            onChangeText={ (value) => handleChangetext('cantidad',value)}
-            />
-            </View>
-            <View style={styles.casillas}>
-            <Text  style={{flex:0.5}}>Producto</Text>
-                        <TextInput style={styles.inputText}
-            placeholder="ingrese precio"
-            onChangeText={ (value) => handleChangetext('name',value)}
-            />
-            </View>
-            <View style={styles.casillas}>
-            <Text  style={{flex:0.5}}>Valor</Text>
-                        <TextInput style={styles.inputText}
-            placeholder="ingrese cant"
-            onChangeText={ (value) => handleChangetext('valor',value)}
-            />
+  
+         <View style={styles.titulo}>
+            <Text style={styles.tituloNombre1}>PRODUCTO</Text>
+            <Text style={styles.tituloNombre2}>PRECIO</Text>
+            <Text style={styles.tituloNombre3}>CANTIDAD</Text>
+            <Text style={styles.tituloNombre4}></Text>
 
-            </View>
-            
-            
-            
-
-            <View>
-                    <Button onPress={handleAddItem} title="Agregar datos"/>
-            </View>
-
-            <View>
-                    <Button onPress={handleCreatedList} title="Crear nueva lista"/>
-            </View>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}
-            >
-              <Text style={styles.textStyle}>Guardar</Text>
-            </Pressable>
           </View>
-        </View>
+    
+
+    
+          
+            <FlatList                
+                  data={listadoItem}
+                  renderItem={({item}) => //<Text style={styles.item}>{item.name}</Text>
+                  <TouchableHighlight
+                      key={item.key}
+                      >
+                       
+                        <View style={styles.item}>
+
+                              <Text  style={styles.producto}>{item.name}</Text> 
+                              <Text style={styles.precio}>{'$ '+item.valor}</Text> 
+                              <Text style={styles.cantidad}>{item.cantidad}</Text> 
+                                <Pressable
+                                      style={[styles.button, styles.buttonOpen]}
+                                      onPress={() => showModalEditar(item.id)}
+                                      >
+                                    <Text style={styles.btnEditar}>Editar</Text>
+                                </Pressable>
+
+
+                        </View>
+                  </TouchableHighlight>
+                }
+            />
+
+            <View style={styles.botones}>
 
 
 
-      </Modal>
+            <View>
+                <Modal 
+                    style={styles.modal}
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => {
+                      Alert.alert("Modal has been closed.");
+                      setModalVisible(!modalVisible);
+                    }}
+                >
 
-        
-      <FlatList style={{backgroundColor:'blue'}}
-        data={prueba}
-        renderItem={({item}) => 
-        <Text>{item.cantidad + item.name + item.valor}</Text>}
-        
+                      
+                  
+                  <View style={styles.centeredView}>
+
+                  <Pressable
+                        style={styles.btnCerrar}
+                        onPress={() => setModalVisible(!modalVisible)}
+                      >
+                        <Text style={styles.textStyle}>Cerrar</Text>
+                  </Pressable>
+                
+                    <View style={styles.modalView}>
+            
+
+
+                      <View style={styles.casillas}>
+                        <Text style={{flex:0.5}}>Cantidad</Text>
+                          <TextInput style={styles.inputText}
+                            value={state.cantidad}
+                            placeholder="ingrese item"
+                            onChangeText={ (value) => handleChangetext('cantidad',value)}
+                            />
+                      </View>
+                      <View style={styles.casillas}>
+                          <Text  style={{flex:0.5}}>Producto</Text>
+                            <TextInput   style={styles.inputText}
+                            value={state.name}
+                          placeholder="ingrese precio"
+                          onChangeText={ (value) => handleChangetext('name',value)}
+                          />
+                      </View>
+                      <View style={styles.casillas}>
+                          <Text  style={{flex:0.5}}>Valor</Text>
+                              <TextInput style={styles.inputText}
+                              value={state.valor}
+                          placeholder="ingrese cant"
+                          onChangeText={ (value) => handleChangetext('valor',value)}
+                          />
+
+                      </View>
+                      
+                      <View style={styles.btnModal}>
+                        
+                     
+                        <Pressable
+                          style={[styles.button, styles.buttonOpen]}
+                          onPress={() => handleAddItem()}
+                        >
+                          <Text style={styles.textStyle}>Agregar datos</Text>
+                        </Pressable>
+                   
+
+                      </View>
+                    
+          
+                    </View>
+                  </View>
+                        
+                
+
+                </Modal>
+            </View>
+
+            <View>
+                <Modal 
+                    style={styles.modal}
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalVisibleEditar}
+                    onRequestClose={() => {
+                      Alert.alert("Modal has been closed.");
+                      setModalVisibleEditar(!modalVisibleEditar);
+                    }}
+                >
+
+                      
+                  
+                  <View style={styles.centeredView}>
+
+                  <Pressable
+                        style={styles.btnCerrar}
+                        onPress={() => setModalVisibleEditar(!modalVisibleEditar)}
+                      >
+                        <Text style={styles.textStyle}>Cerrar</Text>
+                  </Pressable>
+                
+                    <View style={styles.modalView}>
+            
+
+
+                      <View style={styles.casillas}>
+                        <Text style={{flex:0.5}}>Cantidad</Text>
+                          <TextInput style={styles.inputText}
+                            value={state.cantidad}
+                            placeholder="CAMBIAR CANTIDAD"
+                            onChangeText={ (value) => handleChangetext('cantidad',value)}
+                            />
+                      </View>
+                      <View style={styles.casillas}>
+                          <Text  style={{flex:0.5}}>Producto</Text>
+                            <TextInput   style={styles.inputText}
+                            value={state.name}
+                          placeholder="CAMBIAR NOMBRE"
+                          onChangeText={ (value) => handleChangetext('name',value)}
+                          />
+                      </View>
+                      <View style={styles.casillas}>
+                          <Text  style={{flex:0.5}}>Valor</Text>
+                              <TextInput style={styles.inputText}
+                              value={state.valor}
+                          placeholder="CAMBIAR PRECIO"
+                          onChangeText={ (value) => handleChangetext('valor',value)}
+                          />
+
+                      </View>
+                      
+                      <View style={styles.btnModal}>
+                        
+                      <Pressable
+                          style={[styles.button, styles.buttonOpen]}
+                          onPress={()=>handleDeleteItem(state.id)}
+                        >
+                          <Text style={styles.textStyle}>Eliminar</Text>
+                        </Pressable>
+
+                        <Pressable
+                          style={[styles.button, styles.buttonOpen]}
+                          onPress={() => handleEditItem( state.id)}
+                        >
+                          <Text style={styles.textStyle}>ACEPTAR</Text>
+                        </Pressable>
+                   
+
+                      </View>
+                    
+          
+                    </View>
+                  </View>
+                        
+                
+
+                </Modal>
+            </View>
       
-      />    
-
-      <View style={styles.botones}>
-      <Pressable
-          style={[styles.button, styles.buttonOpen,styles.boton]}
-          onPress={(handleCreatedList) => setModalVisible(true)}
-        >
-          <Text style={styles.textStyle}>CREAR LISTA boton</Text>
-        </Pressable>
-        
-        <Pressable
-          style={[styles.button, styles.buttonOpen,styles.boton]}
-          onPress={() => setModalVisible(true)}
-        >
-          <Text style={styles.textStyle}>AGREGAR ITEM</Text>
-        </Pressable>
-
-      </View>
-      
-      <View>
-        
-      </View>
-    </View>
-      
+         
+</View>
+              <Pressable
+                style={[styles.button, styles.buttonOpen]}
+                onPress={() => setModalVisible(true)}
+              >
+                  <Text style={styles.textStyle}>AGREGAR ITEM boton</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.button, styles.buttonOpen]}
+                onPress={() => handleCreatedList()}
+                          >
+                   <Text visible={false} style={styles.textStyle}>CREAR LISTA boton</Text>
+              </Pressable>
 
  </View>
 
@@ -263,21 +524,24 @@ const styles = StyleSheet.create({
     button: {
       borderRadius: 20,
       padding: 10,
-      elevation: 2,
+      elevation: 10,
+      margin:10,
+     
       
     },
     buttonOpen: {
-      backgroundColor: "#F194FF",
-
+      backgroundColor: "#000066",
+      color: "white",
     },
     buttonClose: {
       backgroundColor: "#2196F3",
-            
+      color: "white",
     },
     textStyle: {
       color: "white",
       fontWeight: "bold",
       textAlign: "center"
+     
     },
     modalText: {
       marginBottom: 15,
@@ -285,12 +549,104 @@ const styles = StyleSheet.create({
     },
     casillas:{
       flexDirection: "row",
-      alignItems:'center',
+      alignItems:'stretch',
+    
       
       
     },
     botones:{
-      marginBottom:30
+      marginBottom:30,
+      alignSelf:'flex-end',
+      marginTop:400,
+      position:'absolute'
+
+    },
+    item: {
+      padding: 10,
+      fontSize: 18,
+      height: 80,
+      backgroundColor:'white',
+      margin:10,
+      flexDirection:'row',
+      flex:5,
+      alignItems:'center',
+      borderRadius:10
+    },
+    producto: {
+      fontSize: 20,
+      textAlign:'left',
+      flex:3,
+      marginTop:5
+  
+    },
+    precio: {
+      fontSize: 20,
+      textAlign:'center',
+      marginRight:1,
+      flex:2,
+      marginTop:5,
+      borderWidth:1,
+      borderColor:'#AEE4FF',
+      borderRadius:10    
+    },
+    cantidad: {
+      fontSize: 20,
+      flex:1,
+      textAlign:'center',
+      marginTop:5,
+      borderWidth:1,
+      borderColor:'#AEE4FF',
+      borderRadius:10  
+    },
+    titulo:{
+      flexDirection:'row',
+      backgroundColor:'#000066',
+      text: 'white',
+      height:25,
+      alignItems:'center'
+    },
+    tituloNombre1:{
+      fontSize: 15,
+      flex:2.2,
+      marginLeft:15,
+      color: "white",
+    },
+    tituloNombre2:{
+      fontSize: 15,
+      flex:1,
+      color: "white",
+    },
+    tituloNombre3:{
+      fontSize: 15,
+      flex:1,
+      color: "white",
+    },
+    tituloNombre4:{
+      fontSize: 15,
+      flex:1,
+      
+    },
+    btnEditar:{
+      color: "white",
+      fontWeight: "bold",
+      textAlign: "center",
+      height:20
+    },
+    btnModal:{
+      flexDirection:'row',
+      
+    },
+    btnCerrar:{
+      backgroundColor: "#000066",
+      color: "white",
+      fontWeight: "bold",
+      height:40,
+      width:50,
+      borderRadius:15,
+      marginBottom:-80,
+      marginLeft:250,
+            
+      
     }
   });
 export default Lista;

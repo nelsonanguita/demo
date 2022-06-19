@@ -24,13 +24,14 @@ const Login = () => {
   const login = async () =>{
     try {
       
-      const user = await signInWithEmailAndPassword(
+      //const user = await signInWithEmailAndPassword(
+      await signInWithEmailAndPassword(
         auth, 
         loginEmail,
         loginPassword)
       .then(()=>{
        // console.log("Account logged")
-        const user = auth.currentUser;
+        //const user = auth.currentUser;
        // console.log(user)
         navigation.navigate('Home')
 
@@ -53,7 +54,6 @@ const Login = () => {
       .then((userCredential) => {
         // Signed in
         const user = userCredential.user;
-        console.log(user)
         navigation.navigate('Home')
         // ...
       })

@@ -15,15 +15,15 @@ const { width, height } = Dimensions.get("window");
 
 const Registro = () => {
 
-  const [email, setEmail ] = React.useState('')
-  const [password, setPassword ] = React.useState('')
+  const [email, setEmail ] = React.useState('prueba2@borra2.com')
+  const [password, setPassword ] = React.useState('123456')
   const navigation = useNavigation();
 
   
-  const register = async () =>{
+  const register =  () =>{
     try {
       
-      const user = await createUserWithEmailAndPassword(auth, email, password)
+   createUserWithEmailAndPassword(auth, email, password)
       .then(()=>{
         //console.log("Account created")
         const user = auth.currentUser;

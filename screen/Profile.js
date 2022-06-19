@@ -18,7 +18,7 @@ const Profile = ({navigation}) =>{
       
     
       return () => {
-        //auth=null
+        
         return auth
       }
     }, [auth])

@@ -1,5 +1,7 @@
 import React, { Component, useState,useEffect } from "react";
 import { View, Text, Button } from "react-native";
+import styles from "./Style/styles";
+
 import { signOut } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
@@ -32,12 +34,22 @@ const Profile = ({navigation}) =>{
     
     }
     return(
-        <View style={{flex:1, backgroundColor:'#AEE4FF'}}>
-            <Text>hola estoy en profile</Text>
+        
+           <View style={styles.container}>
+            <View style={styles.container}>
+                <View style={styles.contenedorTitulo}>
+                    <Text style={styles.titulo}>
+                            Datos Personales
+                    </Text>
+                </View>
+            </View>
             <Button onPress={logout} title="Salir de la sesion"/>
         </View>
+        
+        
     )
 }
+
 
 
 export default Profile;

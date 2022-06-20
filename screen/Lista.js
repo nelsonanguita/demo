@@ -264,6 +264,13 @@ const handleAddItem = async (e) => {
 return(
  <View style={styles.container}>
 
+        <View style={styles.container}>
+          <View style={styles.contenedorTitulo}>
+              <Text style={styles.titulo}>
+                      LLevamos un total de: $ 0.-   
+              </Text>
+          </View>
+        </View>
   
          <View style={styles.titulo}>
             <Text style={styles.tituloNombre1}>PRODUCTO</Text>
@@ -467,13 +474,13 @@ return(
                 style={[styles.button, styles.buttonOpen]}
                 onPress={() => setModalVisible(true)}
               >
-                  <Text style={styles.textStyle}>AGREGAR ITEM boton</Text>
+                  <Text style={styles.textStyle}>AGREGAR ITEM</Text>
               </Pressable>
               <Pressable
                 style={[styles.button, styles.buttonOpen]}
                 onPress={() => handleCreatedList()}
                           >
-                   <Text visible={false} style={styles.textStyle}>CREAR LISTA boton</Text>
+                   <Text visible={false} style={styles.textStyle}>CREAR LISTA</Text>
               </Pressable>
 
  </View>
@@ -526,7 +533,8 @@ const styles = StyleSheet.create({
       padding: 10,
       elevation: 10,
       margin:10,
-     
+      width:100,
+      alignSelf:'flex-end'
       
     },
     buttonOpen: {
@@ -555,6 +563,7 @@ const styles = StyleSheet.create({
       
     },
     botones:{
+      
       marginBottom:30,
       alignSelf:'flex-end',
       marginTop:400,
@@ -647,6 +656,18 @@ const styles = StyleSheet.create({
       marginLeft:250,
             
       
-    }
+    },
+    contenedorTitulo:{
+      height:40,
+      backgroundColor:'#0077B6',
+      flexDirection: "row",
+      alignItems:'center',
+  },
+  titulo:{
+      color:'white',
+      fontSize:20,
+      textAlign:'center',
+      
+  }
   });
 export default Lista;

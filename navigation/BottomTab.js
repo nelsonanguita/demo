@@ -15,7 +15,7 @@ const { width, height } = Dimensions.get("window");
 
 const Tab = createBottomTabNavigator();
 
-export const BottomTab = () =>{
+export const BottomTab = (focused) =>{
     const [user, setUser] = React.useState()
     const [idLista, setidLista] = React.useState('xxx')
     
@@ -26,48 +26,63 @@ export const BottomTab = () =>{
     return(
                      <Tab.Navigator  initialRouteName="Login"
             screenOptions={{
-                tabBarShowLabel:false,
+               
+                tabBarActiveTintColor: 'white',
+                tabBarInactiveTintColor:  '#0077B6',
+                tabBarLabelStyle:{
+                   //color:'green',
+                    height:50,
+                    fontSize:20,
+                    
+                },
+                
+                tabBarShowLabel:true,
                 tabBarHideOnKeyboard: true,
                 tabBarStyle:{
                     bottom:0,
-                    backgroundColor:'#FF4000',
+                    backgroundColor:'#03045E',
                     borderRadius:0,
                     height: 70,
                     width: width,
+                    
                            
-                }
+                },
+                
+              
             }} >
                 
                 {auth.currentUser?.email ?(
                     <Tab.Group>
                         <Tab.Screen
-                            name="Home"
+                                                   
+                            name= "Home"
                             component = {Home}
                             initialParams = {{idLista:{idLista}}}
                             options={{
                                 headerShown: false, //borrar encabezado
+                             
                                 tabBarIcon:({focused})=>(
                                     <View style={{
                                         //alignItems: 'center',justifyContent:'center',top:0
                                     }}>
 
-                                    <Text>Home</Text>
                                         </View>  
                                         )
                                         
                                     }}/> 
                          <Tab.Screen
-                            name="Lista"
+                            name="Salidas"
                             component = {Lista}
                             options={{
-                                //headerShown: false, //borrar encabezado
+                                headerShown: false, //borrar encabezado
                                 footerShown: false,
+                                
                                 tabBarIcon:({focused})=>(
                                     <View style={{
-                                       // alignItems: 'center',justifyContent:'center',top:0
+                                       // alignItems: 'center',justifyContent:'center',top:0 
                                     }}>
 
-                                    <Text>Salidas</Text>
+                                
                                         </View>  
                                         )
                                         
@@ -82,7 +97,7 @@ export const BottomTab = () =>{
                                       //  alignItems: 'center',justifyContent:'center',top:0
                                     }}>
 
-                                    <Text>Historial</Text>
+                                
                                         </View>  
                                         )
                                         
@@ -97,7 +112,7 @@ export const BottomTab = () =>{
                                        // alignItems: 'center',justifyContent:'center',top:0
                                     }}>
 
-                                    <Text>Perfil</Text>
+                                  
                                         </View>  
                                         )
                                         
@@ -158,5 +173,7 @@ const styles = StyleSheet.create({
         width:25,
         height:25,
         color: 'green'
-    }
+    },
+
+
 })

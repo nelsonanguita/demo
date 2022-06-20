@@ -1,4 +1,4 @@
-import React, {useEffect ,useState} from "react";
+import React, {useEffect ,useState,useRef} from "react";
 import { View,FlatList,TouchableHighlight, TextInput, Text, Modal, StyleSheet, Pressable, Alert } from "react-native";
 import {collection, addDoc, getDocs,getDoc,updateDoc, deleteDoc, doc } from 'firebase/firestore'
 import {db, auth } from "../database/firebase";
@@ -14,43 +14,42 @@ const Lista = () =>{
   const [idLista, setidLista] = React.useState(''); 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisibleEditar, setModalVisibleEditar] = useState(false);
-  
+  //const { current: listadoItem } = useRef([]);
   const [idItem, setIdItem ]= useState('');
  
 if (true) {
   useEffect(() =>{        
     
-    async function Lista() {
+   
+    
+    async function ListaT() {
       console.log("Dentro de la funcion")
   
       const querySnapshot = await getDocs(collection(db, "Usuario",auth.currentUser.uid,'Salidas',idLista,'Items'));
-      const listadoItem = []
+      const listadoItemTemp = []
       querySnapshot.forEach((doc) => {
         // console.log(doc.id, " => ", doc.data());
         const{ cantidad, name, valor} = doc.data()
-            listadoItem.push({
+        listadoItemTemp.push({
               id:doc.id,
               cantidad,
               name,
               valor,
             })
     
-           // console.log(listadoItem)
+           
   
       })      
-     // console.log(listadoItem+"desde el effect")
-     setListadoItem(listadoItem)  
-     //return null;
+     
+      setListadoItem(listadoItemTemp)  
+     
     }
-    //const  querySnapshot =  await getDocs(collection(db, "Usuario",auth.currentUser.uid,'Salidas',idLista,'Items'));
-    
+        
     if (idLista!=='') {
       console.log("Se recorrio la lista desde la BD")
-      Lista()
+      ListaT()
     }
-    
-    
-  },[])
+  },[idItem])
 }
 
   
@@ -213,7 +212,7 @@ const handleAddItem = async (e) => {
    // e.preventDefault()
     try {
      console.log("agrego item")
-     await addDoc(collection(db, 'Usuario',auth.currentUser.uid,'Salidas',idLista,'Items'), {
+     const docRef = await addDoc(collection(db, 'Usuario',auth.currentUser.uid,'Salidas',idLista,'Items'), {
                 
         cantidad: state.cantidad,
         name: state.name,
@@ -221,7 +220,8 @@ const handleAddItem = async (e) => {
               
         //created: Timestamp.now()
       })
-      buscarElementos()
+      setIdItem(docRef.id)
+     // buscarElementos()
       setModalVisible(false)
       console.log("agrego item exitoso")
         state.cantidad =''

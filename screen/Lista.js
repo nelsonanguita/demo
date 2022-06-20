@@ -1,4 +1,4 @@
-import React, {useEffect ,useState,useRef} from "react";
+import React, {useEffect ,useState} from "react";
 import { View,FlatList,TouchableHighlight, TextInput, Text, Modal, StyleSheet, Pressable, Alert } from "react-native";
 import {collection, addDoc, getDocs,getDoc,updateDoc, deleteDoc, doc } from 'firebase/firestore'
 import {db, auth } from "../database/firebase";
@@ -10,14 +10,16 @@ import { BottomTabBar } from "@react-navigation/bottom-tabs";
 
 const Lista = () =>{
 
-  const [listadoItem, setListadoItem] = React.useState([]);
-  const [idLista, setidLista] = React.useState(''); 
+  const [listadoItem, setListadoItem] = useState([]);
+  const [idLista, setidLista] = useState(''); 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisibleEditar, setModalVisibleEditar] = useState(false);
-  //const { current: listadoItem } = useRef([]);
   const [idItem, setIdItem ]= useState('');
- 
-if (true) {
+  const [total, setTotal] = useState('');
+
+
+
+
   useEffect(() =>{        
     
    
@@ -27,6 +29,7 @@ if (true) {
   
       const querySnapshot = await getDocs(collection(db, "Usuario",auth.currentUser.uid,'Salidas',idLista,'Items'));
       const listadoItemTemp = []
+      let totalTemp=0
       querySnapshot.forEach((doc) => {
         // console.log(doc.id, " => ", doc.data());
         const{ cantidad, name, valor} = doc.data()
@@ -37,10 +40,10 @@ if (true) {
               valor,
             })
     
-           
+            totalTemp+=(Number(valor)*Number(cantidad))
   
       })      
-     
+      setTotal(totalTemp)
       setListadoItem(listadoItemTemp)  
      
     }
@@ -50,9 +53,7 @@ if (true) {
       ListaT()
     }
   },[idItem])
-}
-
-  
+ 
 
   async function buscarElementos() {
     console.log("Dentro de la funcion")
@@ -90,11 +91,10 @@ const [state, setState] = useState({
 
 //EDITAR ELEMENTOS
 const handleEditItem = async (idItem) => {
-console.log("actualiza?"+ idItem)
+console.log("actualiza? "+ idItem)
  try {
   const docRef = doc(db,('Usuario/'+auth.currentUser.uid+'/Salidas/'+idLista+'/Items/'),idItem)
-  //  const docRef = doc(db,'Usuarios',auth.currentUser.uid,'Salidas',idLista,'Items',idItem)
-    
+   
     await updateDoc(docRef ,{
       cantidad: state.cantidad,
       name: state.name,
@@ -106,8 +106,10 @@ console.log("actualiza?"+ idItem)
       'cantidad': '',
       'id': ''
     })
+    setIdItem(docRef.id)
+
     setModalVisibleEditar(false);
-    buscarElementos()
+   // buscarElementos()
  } catch (error) {
   console.log(error.message)
  }
@@ -119,35 +121,13 @@ console.log("actualiza?"+ idItem)
 //ELIMINAR ELEMENTO
 const handleDeleteItem = async (idItem) => {
   try {
-    //const docRef = doc(db,'Items',idItem)
-    //const querySnapshot = await getDocs(collection(db, "Usuario",auth.currentUser.uid,'Salidas',idLista,'Items'))
-  //const docRef = getDoc(collection(db,`Usuario/${auth.currentUser.uid}/Salidas/${idLista}/Items/`))
+  
    const docRef = doc(db,('Usuario/'+auth.currentUser.uid+'/Salidas/'+idLista+'/Items/'),idItem)
-   // const docRef = doc(db,'Task','smINzqlywGB8Mxk1L1JS')
-   //const docRef = doc(db,'Salidas','eDNzwyjKkYHgP7k3hRmp')
-    //const docRef = doc(db,`Usuarios "/" ${auth.currentUser.uid} "/" Salidas`,'eDNzwyjKkYHgP7k3hRmp')
-   // deleteDoc(docRef) 
-    //const querySnapshot = 
-    // querySnapshot.forEach((doc) => {      
-    //   // console.log(listadoItem)
-    //      deleteDoc(docRef)  
-    // })  
+   deleteDoc(docRef).then({
 
-   
-    // if (idItem==val.id) {
-    //   val.delete() 
-    // }
-  deleteDoc(docRef).then({
-
-    
-    //buscarElementos
-    //console.log("Eliminado   " + idItem)
-  },
- // buscarElementos()
-   
-  )
-  buscarElementos()
-
+  })
+ 
+  setIdItem(docRef.id)
   setState({...state, 
     'name': '',
     'valor': '',
@@ -155,14 +135,7 @@ const handleDeleteItem = async (idItem) => {
     'id': ''
   })
   setModalVisibleEditar(false);
-
-   //deleteDoc(doc(db,'Usuarios'/auth.currentUser.uid/'Salidas'/idLista/'Items',idItem));
-
-  //console.log(docRef)
-    
-    //console.log(idItem)
-    //console.log(idLista)
-
+  
   } catch (error) {
     console.log(error.message)
     console.log("error.message")
@@ -172,23 +145,10 @@ const handleDeleteItem = async (idItem) => {
 }
 
 
-const handleDeleteItem2= async (itemId ) => {// (userId, listId, itemId ) => {
-  //collection(db, "Usuario",auth.currentUser.uid,'Salidas',idLista,'Items')
- // const subColRef = collection(db, "Ususrios", userId, "Salidas",listId);
- //const subColRef = collection(db, "users", userId, "books");
- // const subColRef = collection(db, "Usuarios", auth.currentUser.uid, "Salidas",idLista,"Items");
-  const subColRef = collection(db, `"Usuario"/${auth.currentUser.uid}/"Salidas"/${idLista}/"Items"`);
-  
-  await deleteDoc(doc(subColRef, itemId));
-  console.log("Eliminado el item "+itemId)
-}
-
-
 //OPTENGO DATOS DESDE LO INPUT
 const handleChangetext=(name, value)=>{
     setState({...state, [name]: value})
 }
-
 
 //MODAL
 
@@ -264,15 +224,13 @@ const handleAddItem = async (e) => {
 return(
  <View style={styles.container}>
 
-        <View style={styles.container}>
           <View style={styles.contenedorTitulo}>
               <Text style={styles.titulo}>
-                      LLevamos un total de: $ 0.-   
+                      LLevamos un total de: $ {total}.-   
               </Text>
           </View>
-        </View>
   
-         <View style={styles.titulo}>
+         <View style={styles.titulos}>
             <Text style={styles.tituloNombre1}>PRODUCTO</Text>
             <Text style={styles.tituloNombre2}>PRECIO</Text>
             <Text style={styles.tituloNombre3}>CANTIDAD</Text>
@@ -292,14 +250,14 @@ return(
                        
                         <View style={styles.item}>
 
-                              <Text  style={styles.producto}>{item.name}</Text> 
+                              <Text style={styles.producto}>{item.name}</Text> 
                               <Text style={styles.precio}>{'$ '+item.valor}</Text> 
                               <Text style={styles.cantidad}>{item.cantidad}</Text> 
                                 <Pressable
-                                      style={[styles.button, styles.buttonOpen]}
+                                      style={styles.btnEditar}
                                       onPress={() => showModalEditar(item.id)}
                                       >
-                                    <Text style={styles.btnEditar}>Editar</Text>
+                                    <Text style={styles.textEditar}>Editar</Text>
                                 </Pressable>
 
 
@@ -324,16 +282,16 @@ return(
                     }}
                 >
 
-                      
-                  
-                  <View style={styles.centeredView}>
-
-                  <Pressable
+<Pressable
                         style={styles.btnCerrar}
                         onPress={() => setModalVisible(!modalVisible)}
                       >
                         <Text style={styles.textStyle}>Cerrar</Text>
                   </Pressable>
+                  
+                  <View style={styles.centeredView}>
+
+
                 
                     <View style={styles.modalView}>
             
@@ -369,10 +327,10 @@ return(
                         
                      
                         <Pressable
-                          style={[styles.button, styles.buttonOpen]}
+                          style={styles.botonesModalAceptar}
                           onPress={() => handleAddItem()}
                         >
-                          <Text style={styles.textStyle}>Agregar datos</Text>
+                          <Text style={styles.textStyle}>AGREGAR</Text>
                         </Pressable>
                    
 
@@ -399,16 +357,16 @@ return(
                     }}
                 >
 
-                      
-                  
-                  <View style={styles.centeredView}>
-
                   <Pressable
                         style={styles.btnCerrar}
                         onPress={() => setModalVisibleEditar(!modalVisibleEditar)}
                       >
                         <Text style={styles.textStyle}>Cerrar</Text>
                   </Pressable>
+                  
+                  <View style={styles.centeredView}>
+
+
                 
                     <View style={styles.modalView}>
             
@@ -443,15 +401,15 @@ return(
                       <View style={styles.btnModal}>
                         
                       <Pressable
-                          style={[styles.button, styles.buttonOpen]}
+                          style={styles.botonesModalEliminar}
                           onPress={()=>handleDeleteItem(state.id)}
                         >
-                          <Text style={styles.textStyle}>Eliminar</Text>
+                          <Text style={styles.textStyle}>ELIMINAR</Text>
                         </Pressable>
 
                         <Pressable
-                          style={[styles.button, styles.buttonOpen]}
-                          onPress={() => handleEditItem( state.id)}
+                          style={styles.botonesModalAceptar}
+                          onPress={() => handleEditItem(state.id)}
                         >
                           <Text style={styles.textStyle}>ACEPTAR</Text>
                         </Pressable>
@@ -467,22 +425,27 @@ return(
 
                 </Modal>
             </View>
-      
          
-</View>
-              <Pressable
-                style={[styles.button, styles.buttonOpen]}
-                onPress={() => setModalVisible(true)}
-              >
-                  <Text style={styles.textStyle}>AGREGAR ITEM</Text>
-              </Pressable>
-              <Pressable
-                style={[styles.button, styles.buttonOpen]}
-                onPress={() => handleCreatedList()}
-                          >
-                   <Text visible={false} style={styles.textStyle}>CREAR LISTA</Text>
-              </Pressable>
+         
+          </View>
+          <View style={styles.contenedorbotonesAgregar}>
+                      <Pressable
+                        style={styles.buttonAgregar}
+                        onPress={() => handleCreatedList()}
+                                  >
+                          <Text visible={false} style={styles.textStyle}>CREAR LISTA</Text>
+                      </Pressable>
+                      
+                      <Pressable
+                        style={styles.buttonAgregar}
+                        onPress={() => setModalVisible(true)}
+                      >
+                          <Text style={styles.textStyle}>AGREGAR ITEM</Text>
+                      </Pressable>
 
+
+
+          </View>
  </View>
 
     )
@@ -528,19 +491,37 @@ const styles = StyleSheet.create({
       flex:0.5
 
     },
-    button: {
-      borderRadius: 20,
-      padding: 10,
-      elevation: 10,
-      margin:10,
+    buttonAgregar: {
+      borderRadius: 15,
+      padding: 6,
+      //elevation: 10,
       width:100,
-      alignSelf:'flex-end'
-      
-    },
-    buttonOpen: {
       backgroundColor: "#000066",
       color: "white",
+      height:54,
+      marginRight:10,
+      
+      
     },
+    btnEditar:{
+      borderRadius: 17,
+      padding: 10,
+      width:70,
+      backgroundColor: "#000066",
+      color: "white",
+      height:40,
+      
+      
+    },
+    contenedorbotonesAgregar:{
+      height:60,
+      //alignItems:'center',
+      flexDirection: "row",
+      alignSelf:'center',
+      alignItems:'center'
+
+      
+    },  
     buttonClose: {
       backgroundColor: "#2196F3",
       color: "white",
@@ -557,7 +538,7 @@ const styles = StyleSheet.create({
     },
     casillas:{
       flexDirection: "row",
-      alignItems:'stretch',
+      //alignItems:'stretch',
     
       
       
@@ -571,43 +552,46 @@ const styles = StyleSheet.create({
 
     },
     item: {
-      padding: 10,
+      padding: 22,
       fontSize: 18,
       height: 80,
       backgroundColor:'white',
       margin:10,
       flexDirection:'row',
-      flex:5,
-      alignItems:'center',
+      //flex:5,
+      alignContent:'center',
       borderRadius:10
     },
     producto: {
       fontSize: 20,
       textAlign:'left',
       flex:3,
-      marginTop:5
+      marginTop:6
   
     },
     precio: {
       fontSize: 20,
       textAlign:'center',
-      marginRight:1,
+      marginRight:15,
       flex:2,
       marginTop:5,
       borderWidth:1,
       borderColor:'#AEE4FF',
-      borderRadius:10    
+      borderRadius:10  
+        
     },
     cantidad: {
       fontSize: 20,
       flex:1,
-      textAlign:'center',
+      
       marginTop:5,
+      textAlign:'center',
+      marginRight:10,
       borderWidth:1,
       borderColor:'#AEE4FF',
       borderRadius:10  
     },
-    titulo:{
+    titulos:{
       flexDirection:'row',
       backgroundColor:'#000066',
       text: 'white',
@@ -624,6 +608,7 @@ const styles = StyleSheet.create({
       fontSize: 15,
       flex:1,
       color: "white",
+      marginLeft:-40
     },
     tituloNombre3:{
       fontSize: 15,
@@ -635,7 +620,7 @@ const styles = StyleSheet.create({
       flex:1,
       
     },
-    btnEditar:{
+    textEditar:{
       color: "white",
       fontWeight: "bold",
       textAlign: "center",
@@ -645,20 +630,40 @@ const styles = StyleSheet.create({
       flexDirection:'row',
       
     },
+    botonesModalAceptar:{
+      height:30,
+      width:80,
+      backgroundColor:'green',
+      borderRadius:15,
+      marginRight:10,
+      padding:6
+
+    },
+    botonesModalEliminar:{
+      height:30,
+      width:80,
+      backgroundColor:'red',
+      borderRadius:15,
+      marginLeft:10,
+      padding:6
+
+    },
     btnCerrar:{
-      backgroundColor: "#000066",
+      backgroundColor: 'red',
+      padding:6,
       color: "white",
       fontWeight: "bold",
-      height:40,
-      width:50,
+      height:60,
+      width:60,
       borderRadius:15,
-      marginBottom:-80,
-      marginLeft:250,
-            
+      marginBottom:-280,
+      marginLeft:290,
+      marginTop:120,
+      elevation:7
       
     },
     contenedorTitulo:{
-      height:40,
+      height:60,
       backgroundColor:'#0077B6',
       flexDirection: "row",
       alignItems:'center',

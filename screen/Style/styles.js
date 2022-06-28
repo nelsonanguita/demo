@@ -3,7 +3,8 @@ import { StyleSheet } from "react-native";
 
 const estilos = StyleSheet.create({
     container:{
-        backgroundColor: "#AEE4FF",
+        //backgroundColor: "#AEE4FF",
+        backgroundColor:'#161a1d',
         flex: 1,
     },
 
@@ -15,10 +16,16 @@ const estilos = StyleSheet.create({
     },
     contenedorTitulo:{
         height:60,
-        backgroundColor:'#0077B6',
+        //backgroundColor:'#0077B6',
+        //backgroundColor:'#ED7014',
+        backgroundColor:'#FC6A03',
+        
         flexDirection: "row",
         alignItems:'center',
     },
+    safeArea:{
+        backgroundColor:'black'
+    }
     })
 
 export default estilos;

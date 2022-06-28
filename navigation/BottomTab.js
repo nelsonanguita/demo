@@ -10,12 +10,13 @@ import Historial from "../screen/Historial";
 import Login from "../screen/Login";
 import Registro from "../screen/Registro";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import Entypo from "react-native-vector-icons/Entypo"
 
 const { width, height } = Dimensions.get("window");
 
 const Tab = createBottomTabNavigator();
 
-export const BottomTab = (focused) =>{
+export const BottomTab = ({focused}) =>{
     const [user, setUser] = React.useState()
     const [idLista, setidLista] = React.useState('xxx')
     
@@ -27,23 +28,27 @@ export const BottomTab = (focused) =>{
                      <Tab.Navigator  initialRouteName="Login"
             screenOptions={{
                
-                tabBarActiveTintColor: 'white',
-                tabBarInactiveTintColor:  '#0077B6',
+                //tabBarActiveTintColor: 'white',
+               // tabBarInactiveTintColor:  'gray',
                 tabBarLabelStyle:{
                    //color:'green',
-                    height:50,
-                    fontSize:20,
+                  //  height:50,
+                    //fontSize:20,
+             
                     
                 },
                 
-                tabBarShowLabel:true,
+                tabBarShowLabel:false,
                 tabBarHideOnKeyboard: true,
                 tabBarStyle:{
                     bottom:0,
-                    backgroundColor:'#03045E',
-                    borderRadius:0,
-                    height: 70,
+                    //backgroundColor:'#03045E',
+                    backgroundColor:'#FC6A03',
+                    borderColor:'white',
+                    height: 50,
                     width: width,
+                    justifyContent:'center',
+                    marginTop:5
                     
                            
                 },
@@ -62,12 +67,14 @@ export const BottomTab = (focused) =>{
                                 headerShown: false, //borrar encabezado
                              
                                 tabBarIcon:({focused})=>(
-                                    <View style={{
-                                        //alignItems: 'center',justifyContent:'center',top:0
-                                    }}>
-
-                                        </View>  
+                                    <>
+                                    <Entypo name='home' size={25} color={focused ? 'white':'black'}/>
+                                    <Text style={{color:'white'}}>
+                                        HOME
+                                    </Text>
+                                    </>
                                         )
+                                        
                                         
                                     }}/> 
                          <Tab.Screen
@@ -78,12 +85,12 @@ export const BottomTab = (focused) =>{
                                 footerShown: false,
                                 
                                 tabBarIcon:({focused})=>(
-                                    <View style={{
-                                       // alignItems: 'center',justifyContent:'center',top:0 
-                                    }}>
-
-                                
-                                        </View>  
+                                    <>
+                                    <Entypo name='shopping-cart' size={25} color={focused ? 'white':'black'}/>
+                                    <Text style={{color:'white'}}>
+                                        Salida
+                                    </Text>
+                                    </>
                                         )
                                         
                                     }}/>  
@@ -93,12 +100,12 @@ export const BottomTab = (focused) =>{
                             options={{
                                 headerShown: false, //borrar encabezado
                                 tabBarIcon:({focused})=>(
-                                    <View style={{
-                                      //  alignItems: 'center',justifyContent:'center',top:0
-                                    }}>
-
-                                
-                                        </View>  
+                                    <>
+                                    <Entypo name='archive' size={25} color={focused ? 'white':'black'}/>
+                                    <Text style={{color:'white'}}>
+                                        HISTORIAL
+                                    </Text>
+                                    </>
                                         )
                                         
                                     }}/>   
@@ -108,12 +115,12 @@ export const BottomTab = (focused) =>{
                             options={{
                                 headerShown: false, //borrar encabezado
                                 tabBarIcon:({focused})=>(
-                                    <View style={{
-                                       // alignItems: 'center',justifyContent:'center',top:0
-                                    }}>
-
-                                  
-                                        </View>  
+                                    <>
+                                    <Entypo name='user' size={25} color={focused ? 'white':'black'}/>
+                                    <Text style={{color:'white'}}>
+                                        PERFIL
+                                    </Text>
+                                    </>
                                         )
                                         
                                     }}/>          

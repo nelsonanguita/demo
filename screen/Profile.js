@@ -1,5 +1,5 @@
 import React, { Component, useState,useEffect } from "react";
-import { View, Text, Button } from "react-native";
+import { View, Text, Button, SafeAreaView } from "react-native";
 import styles from "./Style/styles";
 
 import { signOut } from "firebase/auth";
@@ -36,14 +36,18 @@ const Profile = ({navigation}) =>{
     return(
         
            <View style={styles.container}>
-            <View style={styles.container}>
-                <View style={styles.contenedorTitulo}>
-                    <Text style={styles.titulo}>
-                            Datos Personales
-                    </Text>
+            
+                <View>
+                <SafeAreaView style={styles.safeArea}>
+                    <View style={styles.contenedorTitulo}>
+                        <Text style={styles.titulo}>
+                                Datos Personales
+                        </Text>
+                    </View>
+                    </SafeAreaView>
+             
                 </View>
-            </View>
-            <Button onPress={logout} title="Salir de la sesion"/>
+                <Button onPress={logout} title="Salir de la sesion"/>   
         </View>
         
         

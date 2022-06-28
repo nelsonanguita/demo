@@ -1,5 +1,7 @@
 import React, { Component, useState } from "react";
 import {Alert, Text,View,  Dimensions,TextInput,  Button,  TouchableOpacity,  StyleSheet,  StatusBar,} from "react-native";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+
 import { useNavigation } from "@react-navigation/native";
 import Svg, { Path, Defs, LinearGradient, Stop } from "react-native-svg";
 
@@ -85,37 +87,40 @@ const Registro = () => {
   }
   return (
     <View style={styles.mainContainer}>
-    <StatusBar style="auto" />
-    <View style={styles.containerSVG}>
-      <SvgTop />
-    </View>
-   
-    <View style={styles.container}>
+    
+        <View style={styles.containerSVG}>
+          <SvgTop />
+        </View>
 
-      <Text style={styles.Title}>Bienvenido!  </Text>
-      <Text style={styles.subTitle}>Registrate solo con tu Email y una contraseña!</Text>
+        <KeyboardAwareScrollView>
 
-      <TextInput
-        style={styles.textInputStyle}
-        placeholder="Ingresa tu correo"
-        onChangeText={(text)=>setEmail(text)}
+          <View style={styles.container}>
+              <Text style={styles.Title}>Bienvenido!  </Text>
+              <Text style={styles.subTitle}>Registrate solo con tu Email y una contraseña!</Text>
+              
+              <TextInput
+                style={styles.textInputStyle}
+                placeholder="Ingresa tu correo"
+                onChangeText={(text)=>setEmail(text)}
 
-      />
-      <TextInput
-        style={styles.textInputStyle}
-        placeholder="Ingresa tu contraseñas"
-        secureTextEntry={true}
-        onChangeText={(text)=>setPassword(text)}
-      />
+              />
+              <TextInput
+                style={styles.textInputStyle}
+                placeholder="Ingresa tu contraseñas"
+                secureTextEntry={true}
+                onChangeText={(text)=>setPassword(text)}
+              />
+              
+              
+              <View style={styles.boton}>
+                <Button style={{marginTop: 20, width:40}} title="Registrarse" onPress={ register}></Button>
+              </View>
+              <Text onPress={()=>navigation.navigate('Login')}>Ya tienes una cuenta? pincha AQUI para iniciar sesión </Text>
+              
 
-      
-      
-      <View style={styles.boton}>
-        <Button style={{marginTop: 20, width:40}} title="Registrarse" onPress={ register}></Button>
-      </View>
-      <Text onPress={()=>navigation.navigate('Login')}>Ya tienes una cuenta? pincha AQUI para iniciar sesión </Text>
+          </View>
+          </KeyboardAwareScrollView>
 
-    </View>
   </View>
     
      // <LoginScreen/>
@@ -129,7 +134,7 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: "center",
-    justifyContent: "center",
+    //justifyContent: "center",
   },
   containerSVG: {
     width: width,
@@ -147,22 +152,31 @@ const styles = StyleSheet.create({
     marginTop: 20,
     borderRadius: 30,
     backgroundColor: "#fff",
+    alignSelf:'center',
+    position:'relative'
+    
   },
   Title: {
     color: "#34434D",
-    fontSize: 70,
+    fontSize: 60,
     fontWeight: "bold",
-    padding:20
+    alignSelf:'center'
+
+   // padding:20
   
   },
   subTitle: {
     marginTop:40,
     fontSize: 15,
     color: "gray",
+    alignSelf:'center'
+
   },
   boton:{
     padding:12,
-    width:200
+    width:200,
+    alignSelf:'center'
+
   }
 });
 
